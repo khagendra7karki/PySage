@@ -45,14 +45,14 @@ def load_dataset(file_path, previous_idx=0, chunk_size=1000):
 def process_row(i, row, supported_languages):
     try:
 
-        allowed_fields = ['repo_name', 'repo_url', 'gha_language', 'files', 'num_files']
+        allowed_fields = ['repo_name','files']
         row = {k: row[k] for k in row if k in allowed_fields}  # Filter allowed fields
 
         # Download file contents
         content = download_contents(row['files'], supported_languages)
         row['files'] = content['files']
 
-        print(i, row['repo_name'])
+        # print(i, row['repo_name'])
         return json.dumps(row) + '\n'
     
     except Exception as e:
@@ -168,17 +168,16 @@ if __name__ == "__main__":
     supported_languages = ['Python']
 
     # Set the output directory
-    output_dir = "./new-python-dataset"
+    output_dir = "./python-dataset"
 
     # Backup file to save progress
     backup_file_path = os.path.join(output_dir, "backup.json")
 
     # Process the dataset in parallel from the last saved position
-    
     asyncio.run(process_dataset(load_dataset, 
                     supported_languages, 
                     output_dir,
                     backup_file_path, 
-                    max_threads=15, 
-                    chunk_size=5000, 
-                    save_interval=1000))
+                    max_threads=12, 
+                    chunk_size=30000, 
+                    save_interval=10000))

@@ -1,13 +1,17 @@
-import ast
+#  checks th cleaned dataset for weird characters ( unicode point > 127 )
 import tokenize
-from tokenize import Token
+import ast
 import multiprocessing as mp
 import os
 import sys
 from typing import List, Dict, Any, Generator
-import ujson
+import json
 import logging
 from io import StringIO
+import shutil
+
+
+
 
 # Count number of leading blanks.
 def getlspace(line):
@@ -25,6 +29,8 @@ def usage(msg=None):
 def errprint(*args):
     sys.stderr.write(" ".join(str(arg) for arg in args))
     sys.stderr.write("\n")
+
+
 
 
 
@@ -210,7 +216,7 @@ def load_data(
             
             code = []
             for line in f:
-                json_code = ujson.loads(line)
+                json_code = json.loads(line)
                 code.append(json_code)
                 
                 if len(code) == chunk_size:
@@ -235,34 +241,8 @@ def write_repos(repos: List[str], output_path: str):
 
     with open(output_path, 'a') as f:
         for repo in repos:
-            f.write(ujson.dumps(repo) + '\n')
+            f.write(json.dumps(repo) + '\n')
 
-
-def to_original(cleaned_file_name, repo_name, file_path):
-    original_dir = './new-python-dataset/syntax_free_repos'
-    prefix = 'syntax_free_repos'
-
-    mapped_file = os.path.join(original_dir, f'{prefix}_{cleaned_file_name[-7]}.jsonl')
-    with open(mapped_file, 'r') as f:
-        for line in f:
-            
-            file_repo_name =""
-            for char in line[15:]:
-                # print(char)
-                if char == '"':
-                    break
-                file_repo_name += char
-            
-            print(cleaned_file_name[-7], file_repo_name, repo_name)
-
-            if file_repo_name != repo_name:
-                continue
-            
-
-            repo = ujson.loads(line)
-            for file in repo['files']:
-                if file['path'] == file_path:
-                    return file['content']
 
 def is_not_english(s: str) -> bool:
     """
@@ -290,18 +270,38 @@ def normalize_string(token: str) -> str:
         str: Normalized string token.
     """
     # Identify the string prefix (if any)
-    # prefixes = {"f", "u", "r", "b", "fr", "rf", "ur", "br", "rb"}
-    # prefix_end = 0
-    is_triple = False
-    if len(token) >= 6 and token[-3] == token[-2] == token[-1]: 
-        is_triple= True
+    prefixes = {"f", "u", "r", "b", "fr", "rf", "ur", "br", "rb"}
+    prefix_end = 0
+    while prefix_end < len(token) and token[prefix_end].lower() in "furb":
+        prefix_end += 1
+
+    prefix = token[:prefix_end].lower()
+    if prefix not in prefixes and prefix != "":
+        raise ValueError(f"Invalid string prefix: {prefix}")
+
+    # Extract the quotes and string content
+    if token[prefix_end:prefix_end + 3] in {'"""', "'''"}:  # Triple-quoted string
+        # quote_type = token[prefix_end:prefix_end + 3]
+        content = token[prefix_end + 3:-3]
+        is_triple = True
+    elif token[prefix_end:prefix_end + 1] in {"'", '"'}:  # Single-quoted string
+        # quote_type = token[prefix_end:prefix_end + 1]
+        content = token[prefix_end + 1:-1]
+        is_triple = False
+    else:
+        raise ValueError(f"Invalid string token format: {token}")
 
     # Handle non-English content
+    if is_not_english(content):
+        placeholder = '"""<NON ENGLISH STRING>"""' if is_triple else '"<NON ENGLISH STRING>"'
+        return f"{prefix}{placeholder}"
 
-    if is_not_english(token):
-        return '"""<NON ENGLISH STRING>"""' if is_triple else '"<NON ENGLISH STRING>"'
-
-    return token
+    # Escape double quotes and normalize to double-quoted strings
+    normalized_content = content.replace('"', '\\"')
+    if is_triple:
+        return f'{prefix}"""{normalized_content}"""'
+    return f'{prefix}"{normalized_content}"'
+# def handle_comment(comment: str) -> str:
 
 def normalize_code(code: str) -> str:
     """
@@ -340,99 +340,59 @@ def normalize_code(code: str) -> str:
         out = tokenize.untokenize(buffer)
     return out
 
-def task_process(idx,code_file,  out_dir, prefix, lock):
-    out_file =os.path.join(out_dir, f'{prefix}_{idx}.jsonl')
-    data_loader = load_data(code_file)
-    r = Reindenter()
-    for chunk in data_loader:
-        # cleaned_repos = []
-        for repo in chunk:
-            files = []  # Stores the cleaned files
-            try:
-                for file in repo['files']:
-                    code = normalize_code(file['content'])
-                    code = r.run(code, SPACE_PER_INDENT)
 
-                    files.append(file)
-                
-                repo['files'] = files
-
-
-            except Exception as e:
-                with lock:
-                    print(e)
-                    with open("errors.jsonl", 'a') as f:
-                        f.write(ujson.dumps(repo) + '\n')
-
-        write_repos(chunk, out_file)
-
-
-def test ():
-#     code = """
-# def       hello_world():
-#     x =     r'single"" quoted string'
-#     y = '''triple
-#     quoted
-#     string'''
-#     # This is an example comment
-#     # 中文注释 (Non-English comment)
-#     if True:
-#         print('hello world')
-#     return  x            + y
-    
-# """
-    r = Reindenter()
-
-    # code = r.run(code, SPACE_PER_INDENT)
-    # code = normalize_code(code)
-    # print(code)
-    with open('./errors.jsonl', 'r') as f:
-        for l in f:
-            repo = ujson.loads(l)
-        
-
-            org = "".join(file['content'] for file in repo['files'])
-            modified = ""
-            for file in repo['files']:
-
-                try:
-                    code = normalize_code(file['content'])
-                    ast.parse(code)
-                    
-
-                except Exception as e:
-                    print(e)
-                    with (
-
-                        open('original.py', 'w') as o,
-                        open('cleaned.py', 'w') as c
-                    ):
-                        o.write(file['content'])
-                        c.write(code)
-                    break
-
-
-                code = r.run(code, 4)
-                
-
-
-            break
 
 SPACE_PER_INDENT=4
-# Example usage:
-if __name__ == "__main__":
-    # test()
-    code_path = './python-dataset/syntax_correct_data'
-    out_dir = './python-dataset/cleaned_data'
-    files = os.listdir(code_path)
-    num_workers = min(mp.cpu_count(), len(files))
+r = Reindenter()
 
+data_generator = load_data('errors.jsonl', 0, 1)
+
+def check_syntax(file):
+    try:
+        ast.parse(file['content'])
+    except Exception as e:
+        print("Exception occurred while parsing ast", e)
+        return False
+
+    return True
+
+code_dir = './'
+# code_files = os.listdir(code_dir)
+code_file = './errors2.jsonl'
+# for code_file in code_files:
+
+break_flag = False
+for top_repo in data_generator:
+    if break_flag:
+        break
+    repo = top_repo[0]
+
+    reindented_files = []
+    for file in repo['files']:
+        if not check_syntax(file['content']):
+            print("The file isn't syntatically correct at the beginning")
+            
+    for file in repo['files']:
+        reindented_code = r.run(file['content'], SPACE_PER_INDENT)
+        if not check_syntax(reindented_code):
+            with open('original.py', 'w') as o, open('reindented.py', 'w') as r:
+                o.write(file['content'])
+                r.write(reindented_code)
+                break_flag = True
+            break
+        reindented_files.append(reindented_code)
     
-    os.makedirs(out_dir, exist_ok=True)
-    with mp.Manager() as manager:
-        lock = manager.Lock()
+    
+    # print("After reindenting the code, the file is still syntatically correct")
 
-        with mp.Pool(processes=num_workers) as pool:
-            pool.starmap(task_process, [(i, os.path.join(code_path, file), out_dir, 'data', lock) for i, file in enumerate(files)])
+    normalized_files = []    
+    for file in repo['files']:
+        normalized_code = normalize_code(file['content'])
+        normalized_files.append(normalized_code)
 
+    if not check_syntax(normalized_files):
+        break
 
+    print("After normalizing the code, it is still syntatically correct")
+
+       

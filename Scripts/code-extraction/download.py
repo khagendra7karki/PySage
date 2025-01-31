@@ -16,11 +16,12 @@ s3 = session.client("s3")
 
 # from file ids download the content of the files
 def download_contents(files, supported_languages):
+    out = []
     for file in files:
         if file['language'] not in supported_languages:    # remove non-python files
             continue
         s3_url = f"s3://softwareheritage/content/{file['blob_id']}"
         with open(s3_url, "rb", compression=".gz", transport_params={"client": s3}) as fin:
             file['content'] = fin.read().decode(file['src_encoding'])
-    
-    return {"files": files}
+            out.append({'path': file['path'], 'content': file['content']})
+    return {"files": out}

@@ -1,94 +1,25 @@
 import ast
-import json
-import time
-import logging
 import multiprocessing as mp
 from typing import List, Dict, Any, Generator
 import os
-
+import ujson
+import tokenize
 # format  of repository jsonl file
 '''
 {
     "repo_name": <str>,
-    "repo_url": <str>,
-    "gha_language": <str>,
     "files": [
         {
-            "blob_id": <str>,
             "path": <str>,
-            "content_id": <str>,
-            "language": <str>,
-            "length_bytes": <int>,
-            "detected_licenses": <list>,
-            "license_type": <str>,
-            "src_encoding": <str>,
-            "is_vendor": <bool>,
-            "is_generated": <bool>,
-            "alphanum_fraction": <float>,
-            "alpha_fraction": <float>,
-            "num_lines": <int>,
-            "avg_line_length": <float>,
-            "max_line_length": <int>,
             "content": <str>
         }
     ]
 }
 '''
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, 
-    format='%(asctime)s - %(levelname)s: %(message)s',
-    handlers=[
-        logging.FileHandler('syntax_check.log'),
-        logging.StreamHandler()
-    ]
-)
-
-# workflow for each process
-
-# 1 for each chunk check syntax
-# 2 write to file according to process id
 
 
-def attempt_syntax_fix(code: str) -> tuple[bool, str]:
-    """
-    Attempt to fix common syntax errors in Python code.
-    
-    Args:
-        code (str): Python code to fix
-    
-    Returns:
-        tuple[bool, str]: (True if fixed successfully, fixed code)
-    """
-    try:
-        # First try original code
-        ast.parse(code)
-        return True, code
-    except SyntaxError as e:
-        # Common fixes to attempt
-        fixes = [
-            lambda c: c.replace('´', "'"),  # Fix wrong quote characters
-            lambda c: c.replace('"', '"').replace('"', '"'),  # Fix smart quotes
-            lambda c: c.replace('…', '...'),  # Fix ellipsis
-            lambda c: c.rstrip() + '\n',  # Add missing newline at EOF
-            lambda c: c + 'pass\n' if c.rstrip().endswith(':') else c,  # Add pass to empty blocks
-            lambda c: c.replace('−', '-'),  # Fix minus sign
-            lambda c: c.replace('\t', '    '),  # Replace tabs with spaces
-        ]
-        
-        # Try each fix
-        for fix in fixes:
-            try:
-                fixed_code = fix(code)
-                ast.parse(fixed_code)
-                return True, fixed_code
-            except SyntaxError:
-                continue
-            
-    return False, code
-
-def check_syntax(code: str) -> tuple[bool, str]:
+def check_syntax(code: str ) -> bool:
     """
     Check Python syntax and attempt to fix if there's an error.
     
@@ -99,12 +30,10 @@ def check_syntax(code: str) -> tuple[bool, str]:
         tuple[bool, str]: (True if valid syntax, potentially fixed code)
     """
     try:
-        ast.parse(code)
-        return True, code
-    except SyntaxError:
-        return attempt_syntax_fix(code)
-    except (ValueError, TypeError):
-        return False, code
+        ast.parse(code) 
+        return True
+    except Exception as e:
+        return False
 
 def load_data(
     file_path: str, 
@@ -130,7 +59,7 @@ def load_data(
             
             code = []
             for line in f:
-                json_code = json.loads(line)
+                json_code = ujson.loads(line)
                 code.append(json_code)
                 
                 if len(code) == chunk_size:
@@ -140,7 +69,7 @@ def load_data(
                 yield code
         
     except IOError as e:
-        logging.error(f"Error reading file {file_path}: {e}")
+        print("IOError")
         return []
 
 def process_chunk(data: List[Dict[str, Any]]) -> List[str]:
@@ -149,90 +78,69 @@ def process_chunk(data: List[Dict[str, Any]]) -> List[str]:
     """
     out = []
     for repo in data:
-        is_syntax_free = True
-        python_files = []
+        valid = True
         for file in repo['files']:
-            if 'content' not in file:
-                is_syntax_free = False
-                break
-                
-            is_valid, fixed_code = check_syntax(file['content'])
-            if is_valid:
-                file['content'] = fixed_code  # Use fixed version if successful
-                python_files.append(file)
-            else:
-                is_syntax_free = False
-                break
-                
-        if is_syntax_free and python_files:
-            repo['files'] = python_files
+            content = file.get('content', '')
+            if not content or not check_syntax(content):
+                valid = False
+
+        if valid and repo['files']:
             out.append(repo)
 
     return out
 
 
-def write_repos(repos: List[str], output_path: str):
-    """
-    Write syntax-free repository names to a file.
-    
-    Args:
-        repos (List[str]): Repository names
-        output_path (str): Path to output file
-    """
-    with open(output_path, 'a') as f:
-        for repo in repos:
-            f.write(json.dumps(repo) + '\n')
+def write_repos(repos: Dict[str, str], output_path: str):
+    """Batch write with buffered output"""
+    with open(output_path, 'a', buffering=64*1024) as f:
+        batch = '\n'.join(ujson.dumps(repo) for repo in repos)
+        f.write(batch + '\n')
+
 
 # task for each process
 def process_task(
-    data: List[Dict[str, Any]], 
+    idx: int,
+    code_path: str, 
     output_dir: str,
-    process_idx: int
+    out_file_prefix: str
 ) -> float:
     """
     Process data chunks using multiprocessing.
     
     Args:
-        data (List[Dict]): Repository data
+        idx: Relative index of the process -> Range(0, num_workers)
+        code_path (str): Path of the source code
         output_dir (str): Directory to write output files
-        process_idx (int): Index of process
+        out_file_prefix (str): Prefix of the output file, usage -> out_file_prefix_{idx}.jsonl
     
     Returns:
         float: Total processing time
     """
-    result = process_chunk(data) # repos with valid syntax
+    data_generator = load_data(code_path, 0, 8000)
+    output_file = os.path.join(output_dir, f'{out_file_prefix}_{idx}.jsonl')
 
-    # for each process, write to a different file
-    write_repos(result, f'{output_dir}/syntax_free_repos_{process_idx}.jsonl')
+    for chunk in data_generator:
+        processed_repos = process_chunk(chunk)
+        # for each process, write to a different file
+        write_repos(processed_repos, output_file)
     
 
 def main():
-    input_file = './new-python-dataset/code.jsonl'
-    output_dir = './new-python-dataset/syntax_free_repos2'
+    code_dir = './python-dataset/raw-code'
+    output_dir = './python-dataset/syntax_correct_data'
     
+    code_file_paths = [os.path.join(code_dir, file_name) for file_name in os.listdir(code_dir)]
     # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
     
-    # Load data
-    generator = load_data(input_file, 0, 18000)
-    
-    logging.info("Starting Multiprocessing Syntax Check")
-    start_time = time.time()
-    
     # Determine optimal number of processes
-    num_workers = min(mp.cpu_count(), 9)
-    logging.info(f"Using {num_workers} processes")
-    for i, repos in enumerate(generator):
+    num_workers = min(mp.cpu_count(), len(code_file_paths))
 
-        chunks = [repos[i::num_workers] for i in range(num_workers)]
-        with mp.Pool(processes=num_workers) as pool:
-            pool.starmap(process_task, [(chunk, output_dir, i) for i, chunk in enumerate(chunks)])
-        # log the time taken for each chunk
-        logging.info(f"Time taken for {i+1}th chunk of {len(repos)} repositories: {time.time() - start_time:.4f} seconds")
-        # Periodically log the progress
-        logging.info(f"Processed {(i+1)*len(repos)} repositories")
-
-    logging.info(f"Processing completed in {time.time() - start_time:.4f} seconds")
+    with mp.Pool(processes=num_workers) as pool:
+        pool.starmap(
+            process_task, 
+            [(idx, file_path, output_dir, 'syntx_correct') for idx, file_path in enumerate(code_file_paths)],
+            )
 
 
 
