@@ -3,7 +3,6 @@ import multiprocessing as mp
 from typing import List, Dict, Any, Generator
 import os
 import ujson
-import tokenize
 # format  of repository jsonl file
 '''
 {
@@ -30,9 +29,9 @@ def check_syntax(code: str ) -> bool:
         tuple[bool, str]: (True if valid syntax, potentially fixed code)
     """
     try:
-        ast.parse(code) 
+        ast.parse(code)
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 def load_data(
@@ -68,7 +67,7 @@ def load_data(
             if code:
                 yield code
         
-    except IOError as e:
+    except IOError:
         print("IOError")
         return []
 
@@ -116,7 +115,7 @@ def process_task(
     Returns:
         float: Total processing time
     """
-    data_generator = load_data(code_path, 0, 8000)
+    data_generator = load_data(code_path, 0, 6000)
     output_file = os.path.join(output_dir, f'{out_file_prefix}_{idx}.jsonl')
 
     for chunk in data_generator:

@@ -2,7 +2,11 @@ from collections import defaultdict
 import os
 import ast
 import ujson
+import tokenize
+from tokenize import STRING, COMMENT
+from io import StringIO
 from typing import Generator, List, Dict, Any
+
 
 non_unique_repos = []
 
@@ -49,23 +53,14 @@ def check_unique(code_dir='./python-dataset/raw-code'):
     
     return total_data == len(repo_names)
 
-
-
-
-def check_syntax(code: str ) -> bool:
-    """
-    Check Python syntax and attempt to fix if there's an error.
-    
-    Args:
-        code (str): Python code to check
-    
-    Returns:
-        tuple[bool, str]: (True if valid syntax, potentially fixed code)
-    """
+def check_syntax(code: str) -> bool:
+    """Check if Python code is syntactically correct."""
     try:
-        ast.parse(code) 
+        ast.parse(code, "<string>", "exec")
         return True
-    except Exception as e:
+    except SyntaxError:
+        return False
+    except Exception:
         return False
 
 def load_data(
@@ -101,10 +96,9 @@ def load_data(
             if code:
                 yield code
         
-    except IOError as e:
+    except IOError:
         print("IOError")
         return []
-
 
 def remove_non_unique_files():
     # Load non-unique repositories data
@@ -129,10 +123,6 @@ def remove_non_unique_files():
                 if line_number not in lines_to_remove:
                     cpy.write(line)  # Line already contains newline character
                     
-
-
-
-    
 def check_all_syntax():
     code_dir = './python-dataset/syntax_correct_data'
     file_paths = [os.path.join(code_dir, file) for file in os.listdir(code_dir)]
@@ -146,20 +136,74 @@ def check_all_syntax():
                     content = file.get('content', '')
 
                     try:
-                        ast.parse(content)
+                        compile(content, "<string>", "exec")
             
                     except Exception as e:
+                        print(content)
+                        print("The cause \n", e)
                         raise Exception("Test failed")
 
+def cleaned_data_tests():
+    #  class to catch Invalid Syntax
+    class InvalidSyntax(Exception):
+        pass
+
+
+    # class to catch Non English token occurrence
+    class NonEnglish(Exception):
+        pass
+    def test_syntax(code):
+        try:
+            ast.parse(code)
+            return True
+        except Exception as e:
+            raise InvalidSyntax("Syntax Error") from e
+        
+    def test_non_english(code):
+        tokens = tokenize.generate_tokens(StringIO(code).readline)
+        for token in tokens:
+            if token.type in (STRING, COMMENT):
+                if any( ord(char) > 127 for char in token.string):
+                    raise NonEnglish("Token consists of non english character")
+
+    cleaned_data_dir = './python-dataset/cleaned_data'
+    
+    files = os.listdir(cleaned_data_dir)
+    file_paths = [os.path.join(cleaned_data_dir, file) for file in files]
+    current_content = None
+    try: 
+        for file_path in file_paths:
+            data_loader = load_data(file_path)
+            for chunk in data_loader:
+                for repo in chunk:
+                    for file in repo['files']:
+                        current_content= file['content']
+                        test_syntax(current_content)
+                        test_non_english(current_content)
+        
+        print("All test passed")
+    except InvalidSyntax as e:
+        with open("invalid_syntax.py", 'w') as f:
+            f.write(current_content) 
+    except NonEnglish as e:
+        with open("nonenglish.py", 'w') as f:
+            f.write(current_content)
+
+    
+
+
+
+                    
+                    
 
 if __name__ == '__main__':
     # print(check_unique())
-    try:
-        check_all_syntax()
-        print("Test passed")
-    except Exception as e:
-        print("Test failed")
-        print("The cause ", e)
+    # try:
+    #     check_all_syntax()
+    #     print("Test passed")
+    # except Exception as e:
+    #     print("Test failed")
+    cleaned_data_tests()
 
     # remove_non_unique_files()
 
