@@ -1,21 +1,21 @@
 import ujson
 import subprocess
 from typing import List, Dict, Any, Generator
-from pathlib import Path
 import multiprocessing as mp
 import os
-compile()
 def format_code(code: str) -> str:
+
     """Format code with a dedicated Ruff process per call (safe and simple)."""
     try:
-        result = subprocess.run(
+        normalized_code= subprocess.run(
             ["ruff", "format", "-"],
             input=code,
             text=True,
             capture_output=True,
             check=True,
         )
-        return result.stdout
+
+        return normalized_code.stdout
     except subprocess.CalledProcessError as e:
         # print(f"Error: {e.stderr}")
         raise(Exception(e.stderr))
@@ -54,7 +54,7 @@ def load_data(
             if code:
                 yield code
         
-    except IOError as e:
+    except IOError:
         # logging.error(f"Error reading file {file_path}: {e}")
         return []
     
@@ -73,22 +73,14 @@ def task_process(idx,code_file,  out_dir, prefix, lock):
             try:
                 for file in repo['files']:
                     code = format_code(file['content'])
-                    files.append(code)
+                    files.append({'path': file['path'], 'content': code})
                 
 
                 repo['files'] = files
 
 
             except Exception as e:
-                # with lock:
                 print(e)
-                # with open(f'original_{idx}.py', 'w') as o:
-                #     o.write(file['content'])
-                #     # r.write()
-                #     break_flag = True
-                    # with open("errors.jsonl", 'a') as f:
-                    #     f.write(ujson.dumps(repo) + '\n')
-
         write_repos(chunk, out_file)
 
 

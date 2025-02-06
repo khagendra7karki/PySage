@@ -1,6 +1,5 @@
 import ast
 import tokenize
-from tokenize import Token
 import multiprocessing as mp
 import os
 import sys
