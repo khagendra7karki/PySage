@@ -54,43 +54,44 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS
 socketio = SocketIO(app, cors_allowed_origins="*")  # Enable WebSocket
 
-@app.route('/generate', methods=['POST'])
-def generate():
-    try:
-        data = request.json
-        if not data or "input" not in data:
-            return jsonify({"error": "Invalid input. 'input' field is required."}), 400
+# @app.route('/generate', methods=['POST'])
+# def generate():
+#     try:
+#         data = request.json
+#         print(data, "data received")
+#         if not data or "input" not in data:
+#             return jsonify({"error": "Invalid input. 'input' field is required."}), 400
 
-        input_text = data["input"]
-        max_length = data.get("max_length", 50)
-        temperature = max(0.1, min(data.get("temperature", 1.0), 2.0))
-        top_k = data.get("top_k", 50)
-        top_p = data.get("top_p", 0.95)
+#         input_text = data["input"]
+#         max_length = data.get("max_length", 50)
+#         temperature = max(0.1, min(data.get("temperature", 1.0), 2.0))
+#         top_k = data.get("top_k", 50)
+#         top_p = data.get("top_p", 0.95)
 
-        inputs = tokenizer(
-            input_text,
-            max_length=512,
-            truncation=True,
-            return_tensors="pt"
-        )
+#         inputs = tokenizer(
+#             input_text,
+#             max_length=50,
+#             truncation=True,
+#             return_tensors="pt"
+#         )
 
-        outputs = model.generate(
-            inputs.input_ids,
-            max_length=max_length,
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
-            do_sample=True,
-            pad_token_id=tokenizer.eos_token_id
-        )
+#         outputs = model.generate(
+#             inputs.input_ids,
+#             max_length=max_length,
+#             temperature=temperature,
+#             top_k=top_k,
+#             top_p=top_p,
+#             do_sample=True,
+#             pad_token_id=tokenizer.eos_token_id
+#         )
 
-        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+#         response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-        print(response)
-        return jsonify({"response": response})
+#         print(response)
+#         return jsonify({"response": response})
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 @socketio.on('autoCompletion')
 def handle_auto_completion(data):
@@ -113,7 +114,7 @@ def handle_auto_completion(data):
         prompt = prefix_tok + prefix + \
                 suffix_tok + suffix + \
                 middle_tok
-        
+        print(prompt, "look the prompt")
         inputs = tokenizer(
             prompt,
             max_length=512,
@@ -152,15 +153,17 @@ def handle_auto_completion(data):
         emit('error', {"error": str(e)})
 
 
-@socketio.on('message')
+@socketio.on("message")
 def handle_message(data):
     try:
+        print("Received WebSocket message:", data)
         input_text = data.get("input", "")
         max_length = data.get("max_length", 512)
         temperature = max(0.1, min(data.get("temperature", 1.0), 2.0))
         top_k = data.get("top_k", 50)
         top_p = data.get("top_p", 0.95)
 
+        # Tokenize input
         inputs = tokenizer(
             input_text,
             max_length=512,
@@ -168,21 +171,40 @@ def handle_message(data):
             return_tensors="pt"
         )
 
-        outputs = model.generate(
-            inputs.input_ids,
-            max_length=max_length,
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
+        # Stream the response
+        streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, decode_kwargs={'skip_special_tokens': True})
+        arg_dicts = dict(
+            inputs,
+            streamer=streamer,
+            max_new_tokens=100,  # Adjust for better response control
+            stopping_criteria=[stopping_criteria],
             do_sample=True,
-            pad_token_id=tokenizer.eos_token_id
+            pad_token_id=tokenizer.eos_token_id,
+            top_p=top_p,
+            top_k=top_k,
         )
 
-        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        response=response.split("<|fim_middle|>")[-1]
-        emit('response', {"response": response})
+        thread = Thread(target=model.generate, kwargs=arg_dicts)
+        thread.start()
+
+        chunk_to_send = []
+        for new_tok in streamer:
+            chunk_to_send.append(new_tok)
+            if len(chunk_to_send) >= 5:
+                emit("response", {"response": "".join(chunk_to_send), "type": "chunk"})
+                print("Chunk sent:", "".join(chunk_to_send))
+                chunk_to_send = []
+        
+        # Send final remaining tokens
+        if len(chunk_to_send) > 0:
+            emit("response", {"response": "".join(chunk_to_send), "type": "done"})
+            print("Final chunk sent:", "".join(chunk_to_send))
+
+        thread.join()
+
     except Exception as e:
-        emit('error', {"error": str(e)})
+        print("An exception occurred:", e)
+        emit("error", {"error": str(e)})
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000)

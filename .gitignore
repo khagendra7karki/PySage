@@ -25,3 +25,50 @@ myvenv
 repo-id
 
 models
+
+# Ignore virtual environments
+venv/
+.env/
+.envrc
+*.venv
+
+# Ignore package dependencies
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore installed Python libraries
+*.egg-info/
+pip-log.txt
+pip-delete-this-directory.txt
+Poetry.lock
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# Ignore installed packages (for venv-based installs)
+lib/
+lib64/
+bin/
+include/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore logs and temp files
+logs/
+*.log
+*.out
+*.pid
+*.swp
+*.swo
+*.DS_Store
+*.bak
+
+# Ignore database and cache files
+*.sqlite
+*.sqlite3
+db.sqlite3
+instance/
+
