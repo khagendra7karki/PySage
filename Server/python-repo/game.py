@@ -30,13 +30,7 @@ def game_loop():
         enemy.move()
         player.draw(screen)
         enemy.draw(screen)
-Explanation:**Bullet Class**: Represents a bullet, where attributes sucas `x`, h `y`, `speed`, and `image` are defined. The `move` method moves the bullet down, the `draw` method displays the bullet, and the `is_off_screen` method checks if the bullet has moved 
-- off the screen.**Player Class**: Represents the player, with attributesuch as ``y`, and x`, `speed`. The s `move` method moves the pldown, the ayer `draw` method displays the player, and the `is_off_screen` method checks if the player has moved 
-- off the screen.**game_loop**: Contains the main game loop. It handles events, manages bullets, draws sprites, 
-and updates the game - **Configuration**: state.Contains configuration settings fogame, such as screen r the dimensions and framThe `Config` class e rate. provides methods for accessing these 
-- settings.Class**: Represents a bullet, with methods to initialize, move, draw, and check if it has 
-moved off the screen.This code provides a basic framework for a simple bugame in Pygame. llet The player can shoot bullets and the enemy will move to attack enemies.<|im_end|>
-- ** bullet 
+
         pygame.display.flip()
         clock.tick(CONFIG["fps"])
     

@@ -7,4 +7,5 @@ class Enemy:
         self.y = y
         self.speed = CONFIG["enemy_speed"]
         self.image = pygame.Surface((50, 50))
+        # change the color to green
         self.image.fill((255, 0, 0))
