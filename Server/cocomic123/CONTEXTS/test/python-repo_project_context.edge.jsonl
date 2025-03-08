@@ -1,0 +1,56 @@
+{"head":"bullet","rel":"class","tail":"bullet.Bullet"}
+{"head":"bullet.Bullet","rel":"class_signature","tail":"class Bullet:\n\n"}
+{"head":"bullet.Bullet","rel":"member_function","tail":"bullet.Bullet.__init__"}
+{"head":"bullet.Bullet.__init__","rel":"func_signature","tail":"def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"bullet_size\"]\n        self.image = pygame.Surface(self.size).fill((255, 255, 0))\n        self.speed = CONFIG[\"bullet_speed\"]"}
+{"head":"bullet.Bullet","rel":"member_function","tail":"bullet.Bullet.move"}
+{"head":"bullet.Bullet.move","rel":"func_signature","tail":"def move(self): self.y -= self.speed"}
+{"head":"bullet.Bullet","rel":"member_function","tail":"bullet.Bullet.draw"}
+{"head":"bullet.Bullet.draw","rel":"func_signature","tail":"def draw(self, screen): screen.blit(self.image, (self.x, self.y))"}
+{"head":"bullet.Bullet","rel":"member_function","tail":"bullet.Bullet.is_off_screen"}
+{"head":"bullet.Bullet.is_off_screen","rel":"func_signature","tail":"def is_off_screen(self): return self.y < 0"}
+{"head":"player","rel":"class","tail":"player.Player"}
+{"head":"player.Player","rel":"class_signature","tail":"class Player:\n\n"}
+{"head":"player.Player","rel":"member_function","tail":"player.Player.__init__"}
+{"head":"player.Player.__init__","rel":"func_signature","tail":"def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"player_size\"]\n        self.image = pygame.Surface(self.size).fill((0, 255, 0))\n        self.speed = CONFIG[\"player_speed\"]\n        self.enemy = Enemy(375, 50)  # Depend on Enemy class for interaction\n        self.bullets = []"}
+{"head":"player.Player","rel":"member_function","tail":"player.Player.move"}
+{"head":"player.Player.move","rel":"func_signature","tail":"def move(self, keys):\n        if keys[pygame.K_LEFT]: self.x -= self.speed\n        if keys[pygame.K_RIGHT]: self.x += self.speed\n        if keys[pygame.K_UP]: self.y -= self.speed\n        if keys[pygame.K_DOWN]: self.y += self.speed"}
+{"head":"player.Player","rel":"member_function","tail":"player.Player.shoot"}
+{"head":"player.Player.shoot","rel":"func_signature","tail":"def shoot(self):\n        self.bullets.append(Bullet(self.x + 22, self.y))"}
+{"head":"player.Player","rel":"member_function","tail":"player.Player.draw"}
+{"head":"player.Player.draw","rel":"func_signature","tail":"def draw(self, screen):\n        screen.blit(self.image, (self.x, self.y))\n        for bullet in self.bullets:\n            bullet.move()\n            bullet.draw(screen)"}
+{"head":"config","rel":"global_var","tail":"config.CONFIG"}
+{"head":"config.CONFIG","rel":"value","tail":"CONFIG={\n    \"screen_width\": 800,\n    \"screen_height\": 600,\n    \"fps\": 60,\n    \"player_speed\": 5,\n    \"enemy_speed\": 3,\n    \"bullet_speed\": 7,\n    \"player_size\": (50, 50),\n    \"enemy_size\": (50, 50),\n    \"bullet_size\": (5, 10)\n}"}
+{"head":"enemy","rel":"class","tail":"enemy.Enemy"}
+{"head":"enemy.Enemy","rel":"class_signature","tail":"class Enemy:\n\n"}
+{"head":"enemy.Enemy","rel":"member_function","tail":"enemy.Enemy.__init__"}
+{"head":"enemy.Enemy.__init__","rel":"func_signature","tail":"def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"enemy_size\"]\n        self.image = pygame.Surface(self.size).fill((255, 0, 0))\n        self.speed = CONFIG[\"enemy_speed\"]"}
+{"head":"enemy.Enemy","rel":"member_function","tail":"enemy.Enemy.move"}
+{"head":"enemy.Enemy.move","rel":"func_signature","tail":"def move(self): self.y += self.speed"}
+{"head":"enemy.Enemy","rel":"member_function","tail":"enemy.Enemy.draw"}
+{"head":"enemy.Enemy.draw","rel":"func_signature","tail":"def draw(self, screen): screen.blit(self.image, (self.x, self.y))"}
+{"head":"enemy.Enemy","rel":"member_function","tail":"enemy.Enemy.interact_with_bullet"}
+{"head":"enemy.Enemy.interact_with_bullet","rel":"func_signature","tail":"def interact_with_bullet(self, bullets):\n        for bullet in bullets:\n            if self.x < bullet.x < self.x + self.size[0] and self.y < bullet.y < self.y + self.size[1]:\n                bullets.remove(bullet)\n                return True  # Bullet hit the enemy\n        return False"}
+{"head":"enemy.Enemy","rel":"member_function","tail":"enemy.Enemy.check_collision_with_bullet"}
+{"head":"enemy.Enemy.check_collision_with_bullet","rel":"func_signature","tail":"def check_collision_with_bullet(self, bullets):\n        return False"}
+{"head":"game","rel":"function","tail":"game.game_loop"}
+{"head":"game.game_loop","rel":"func_signature","tail":"def game_loop():\n    pygame.init()\n    screen = pygame.display.set_mode((CONFIG[\"screen_width\"], CONFIG[\"screen_height\"]))\n    clock = pygame.time.Clock()\n    player = Player(375, 500)\n    enemy = Enemy(375, 50)\n\n    running = True\n    while running:\n        screen.fill((0, 0, 0))\n        keys = pygame.key.get_pressed()\n\n        for event in pygame.event.get():\n            if event.type == pygame.QUIT: running = False\n            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:\n                player.shoot()\n\n        player.move(keys)\n        enemy.move()\n        player.draw(screen)\n        enemy.draw(screen)\n\n        if enemy.interact_with_bullet(player.bullets):  # Enemy interacts with player bullets\n            print(\"Enemy hit by bullet!\")\n\n        pygame.display.flip()\n        clock.tick(CONFIG[\"fps\"])\n\n    pygame.quit()"}
+{"head":"bullet","rel":"import","tail":"config.CONFIG"}
+{"head":"bullet.CONFIG","rel":"import","tail":"config.CONFIG"}
+{"head":"player","rel":"import","tail":"config.CONFIG"}
+{"head":"player.CONFIG","rel":"import","tail":"config.CONFIG"}
+{"head":"player","rel":"import","tail":"enemy.Enemy"}
+{"head":"player.Enemy","rel":"import","tail":"enemy.Enemy"}
+{"head":"player","rel":"import","tail":"bullet.Bullet"}
+{"head":"player.Bullet","rel":"import","tail":"bullet.Bullet"}
+{"head":"enemy","rel":"import","tail":"config.CONFIG"}
+{"head":"enemy.CONFIG","rel":"import","tail":"config.CONFIG"}
+{"head":"enemy","rel":"import","tail":"bullet.Bullet"}
+{"head":"enemy.Bullet","rel":"import","tail":"bullet.Bullet"}
+{"head":"game","rel":"import","tail":"config.CONFIG"}
+{"head":"game.CONFIG","rel":"import","tail":"config.CONFIG"}
+{"head":"game","rel":"import","tail":"player.Player"}
+{"head":"game.Player","rel":"import","tail":"player.Player"}
+{"head":"game","rel":"import","tail":"enemy.Enemy"}
+{"head":"game.Enemy","rel":"import","tail":"enemy.Enemy"}
+{"head":"game","rel":"import","tail":"bullet.Bullet"}
+{"head":"game.Bullet","rel":"import","tail":"bullet.Bullet"}

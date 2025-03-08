@@ -72,3 +72,4 @@ logs/
 db.sqlite3
 instance/
 
+Server/cocomic123/ts_package/tree-sitter-python

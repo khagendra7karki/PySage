@@ -1,0 +1,818 @@
+{
+  "project_location":"\/home\/shangkat5\/Desktop\/Major_Project\/PySage\/Server\/python-repo\/",
+  "files_dependencies":{
+    "bullet.py":[
+      "config.py"
+    ],
+    "player.py":[
+      "config.py",
+      "enemy.py",
+      "bullet.py"
+    ],
+    "config.py":[
+
+    ],
+    "enemy.py":[
+      "config.py",
+      "bullet.py"
+    ],
+    "game.py":[
+      "config.py",
+      "player.py",
+      "enemy.py",
+      "bullet.py"
+    ]
+  },
+  "local_dep_stats":{
+    "total_py_files":5,
+    "num_files_with_local_dep":4,
+    "mean":2.0,
+    "std":1.4142135624,
+    "max":4
+  },
+  "non_local_imports":{
+    "bullet.py":[
+      "pygame"
+    ],
+    "player.py":[
+      "pygame"
+    ],
+    "config.py":[
+
+    ],
+    "enemy.py":[
+      "pygame"
+    ],
+    "game.py":[
+      "pygame"
+    ]
+  },
+  "non_local_imports_set":[
+    "pygame"
+  ],
+  "might_miss_files":false,
+  "project_context":[
+    {
+      "file_path":"bullet.py",
+      "file_docstring":"",
+      "imports":[
+        "import pygame",
+        "from config import CONFIG"
+      ],
+      "global_vars":[
+
+      ],
+      "functions":[
+
+      ],
+      "classes":[
+        {
+          "class_signature":"class Bullet:",
+          "class_name":"Bullet",
+          "class_baseclass_list":[
+
+          ],
+          "class_docstring":"",
+          "class_variables":{
+            "raw":[
+
+            ],
+            "processed":[
+
+            ]
+          },
+          "instance_variables":[
+            "self.x",
+            "self.y",
+            "self.size",
+            "self.image",
+            "self.speed"
+          ],
+          "functions":[
+            {
+              "func_signature":"    def __init__(self, x, y):",
+              "func_name":"__init__",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"x",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"y",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"        self.x, self.y = x, y\n        self.size = CONFIG[\"bullet_size\"]\n        self.image = pygame.Surface(self.size).fill((255, 255, 0))\n        self.speed = CONFIG[\"bullet_speed\"]",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"bullet_size\"]\n        self.image = pygame.Surface(self.size).fill((255, 255, 0))\n        self.speed = CONFIG[\"bullet_speed\"]",
+              "byte_span":[
+                59,
+                267
+              ],
+              "start_point":[
+                4,
+                4
+              ],
+              "end_point":[
+                8,
+                43
+              ],
+              "use_dependencies":{
+                "self.image":[
+                  "y",
+                  "self.size"
+                ]
+              }
+            },
+            {
+              "func_signature":"    def move(self): self.y -= self.speed",
+              "func_name":"move",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"    def move(self): self.y -= self.speed",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def move(self): self.y -= self.speed",
+              "byte_span":[
+                273,
+                309
+              ],
+              "start_point":[
+                10,
+                4
+              ],
+              "end_point":[
+                10,
+                40
+              ],
+              "use_dependencies":{
+
+              }
+            },
+            {
+              "func_signature":"    def draw(self, screen): screen.blit(self.image, (self.x, self.y))",
+              "func_name":"draw",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"screen",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"    def draw(self, screen): screen.blit(self.image, (self.x, self.y))",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def draw(self, screen): screen.blit(self.image, (self.x, self.y))",
+              "byte_span":[
+                314,
+                379
+              ],
+              "start_point":[
+                11,
+                4
+              ],
+              "end_point":[
+                11,
+                69
+              ],
+              "use_dependencies":{
+
+              }
+            },
+            {
+              "func_signature":"    def is_off_screen(self): return self.y < 0",
+              "func_name":"is_off_screen",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"    def is_off_screen(self): return self.y < 0",
+              "return_statements":[
+                "return self.y < 0"
+              ],
+              "func_orig_str":"def is_off_screen(self): return self.y < 0",
+              "byte_span":[
+                384,
+                426
+              ],
+              "start_point":[
+                12,
+                4
+              ],
+              "end_point":[
+                12,
+                46
+              ],
+              "use_dependencies":{
+
+              }
+            }
+          ],
+          "class_orig_str":"class Bullet:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"bullet_size\"]\n        self.image = pygame.Surface(self.size).fill((255, 255, 0))\n        self.speed = CONFIG[\"bullet_speed\"]\n\n    def move(self): self.y -= self.speed\n    def draw(self, screen): screen.blit(self.image, (self.x, self.y))\n    def is_off_screen(self): return self.y < 0",
+          "byte_span":[
+            41,
+            426
+          ],
+          "start_point":[
+            3,
+            0
+          ],
+          "end_point":[
+            12,
+            46
+          ]
+        }
+      ]
+    },
+    {
+      "file_path":"player.py",
+      "file_docstring":"",
+      "imports":[
+        "import pygame",
+        "from config import CONFIG",
+        "from enemy import Enemy",
+        "from bullet import Bullet"
+      ],
+      "global_vars":[
+
+      ],
+      "functions":[
+
+      ],
+      "classes":[
+        {
+          "class_signature":"class Player:",
+          "class_name":"Player",
+          "class_baseclass_list":[
+
+          ],
+          "class_docstring":"",
+          "class_variables":{
+            "raw":[
+
+            ],
+            "processed":[
+
+            ]
+          },
+          "instance_variables":[
+            "self.x",
+            "self.y",
+            "self.size",
+            "self.image",
+            "self.speed",
+            "self.enemy",
+            "self.bullets"
+          ],
+          "functions":[
+            {
+              "func_signature":"    def __init__(self, x, y):",
+              "func_name":"__init__",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"x",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"y",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"        self.x, self.y = x, y\n        self.size = CONFIG[\"player_size\"]\n        self.image = pygame.Surface(self.size).fill((0, 255, 0))\n        self.speed = CONFIG[\"player_speed\"]\n        self.enemy = Enemy(375, 50)  # Depend on Enemy class for interaction\n        self.bullets = []",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"player_size\"]\n        self.image = pygame.Surface(self.size).fill((0, 255, 0))\n        self.speed = CONFIG[\"player_speed\"]\n        self.enemy = Enemy(375, 50)  # Depend on Enemy class for interaction\n        self.bullets = []",
+              "byte_span":[
+                109,
+                418
+              ],
+              "start_point":[
+                6,
+                4
+              ],
+              "end_point":[
+                12,
+                25
+              ],
+              "use_dependencies":{
+                "self.size":[
+                  "y"
+                ],
+                "self.image":[
+                  "y",
+                  "self.size"
+                ],
+                "self.speed":[
+                  "y"
+                ],
+                "self.enemy":[
+                  "y"
+                ]
+              }
+            },
+            {
+              "func_signature":"    def move(self, keys):",
+              "func_name":"move",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"keys",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"        if keys[pygame.K_LEFT]: self.x -= self.speed\n        if keys[pygame.K_RIGHT]: self.x += self.speed\n        if keys[pygame.K_UP]: self.y -= self.speed\n        if keys[pygame.K_DOWN]: self.y += self.speed",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def move(self, keys):\n        if keys[pygame.K_LEFT]: self.x -= self.speed\n        if keys[pygame.K_RIGHT]: self.x += self.speed\n        if keys[pygame.K_UP]: self.y -= self.speed\n        if keys[pygame.K_DOWN]: self.y += self.speed",
+              "byte_span":[
+                424,
+                656
+              ],
+              "start_point":[
+                14,
+                4
+              ],
+              "end_point":[
+                18,
+                52
+              ],
+              "use_dependencies":{
+
+              }
+            },
+            {
+              "func_signature":"    def shoot(self):",
+              "func_name":"shoot",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"        self.bullets.append(Bullet(self.x + 22, self.y))  # Player shoots bullets",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def shoot(self):\n        self.bullets.append(Bullet(self.x + 22, self.y))",
+              "byte_span":[
+                662,
+                735
+              ],
+              "start_point":[
+                20,
+                4
+              ],
+              "end_point":[
+                21,
+                56
+              ],
+              "use_dependencies":{
+
+              }
+            },
+            {
+              "func_signature":"    def draw(self, screen):",
+              "func_name":"draw",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"screen",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"        screen.blit(self.image, (self.x, self.y))\n        for bullet in self.bullets:\n            bullet.move()\n            bullet.draw(screen)",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def draw(self, screen):\n        screen.blit(self.image, (self.x, self.y))\n        for bullet in self.bullets:\n            bullet.move()\n            bullet.draw(screen)",
+              "byte_span":[
+                766,
+                933
+              ],
+              "start_point":[
+                23,
+                4
+              ],
+              "end_point":[
+                27,
+                31
+              ],
+              "use_dependencies":{
+
+              }
+            }
+          ],
+          "class_orig_str":"class Player:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"player_size\"]\n        self.image = pygame.Surface(self.size).fill((0, 255, 0))\n        self.speed = CONFIG[\"player_speed\"]\n        self.enemy = Enemy(375, 50)  # Depend on Enemy class for interaction\n        self.bullets = []\n\n    def move(self, keys):\n        if keys[pygame.K_LEFT]: self.x -= self.speed\n        if keys[pygame.K_RIGHT]: self.x += self.speed\n        if keys[pygame.K_UP]: self.y -= self.speed\n        if keys[pygame.K_DOWN]: self.y += self.speed\n\n    def shoot(self):\n        self.bullets.append(Bullet(self.x + 22, self.y))  # Player shoots bullets\n\n    def draw(self, screen):\n        screen.blit(self.image, (self.x, self.y))\n        for bullet in self.bullets:\n            bullet.move()\n            bullet.draw(screen)",
+          "byte_span":[
+            91,
+            933
+          ],
+          "start_point":[
+            5,
+            0
+          ],
+          "end_point":[
+            27,
+            31
+          ]
+        }
+      ]
+    },
+    {
+      "file_path":"config.py",
+      "file_docstring":"",
+      "imports":[
+
+      ],
+      "global_vars":[
+        [
+          "CONFIG",
+          "{\n    \"screen_width\": 800,\n    \"screen_height\": 600,\n    \"fps\": 60,\n    \"player_speed\": 5,\n    \"enemy_speed\": 3,\n    \"bullet_speed\": 7,\n    \"player_size\": (50, 50),\n    \"enemy_size\": (50, 50),\n    \"bullet_size\": (5, 10)\n}"
+        ]
+      ],
+      "functions":[
+
+      ],
+      "classes":[
+
+      ]
+    },
+    {
+      "file_path":"enemy.py",
+      "file_docstring":"",
+      "imports":[
+        "import pygame",
+        "from config import CONFIG",
+        "from bullet import Bullet"
+      ],
+      "global_vars":[
+
+      ],
+      "functions":[
+
+      ],
+      "classes":[
+        {
+          "class_signature":"class Enemy:",
+          "class_name":"Enemy",
+          "class_baseclass_list":[
+
+          ],
+          "class_docstring":"",
+          "class_variables":{
+            "raw":[
+
+            ],
+            "processed":[
+
+            ]
+          },
+          "instance_variables":[
+            "self.x",
+            "self.y",
+            "self.size",
+            "self.image",
+            "self.speed"
+          ],
+          "functions":[
+            {
+              "func_signature":"    def __init__(self, x, y):",
+              "func_name":"__init__",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"x",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"y",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"        self.x, self.y = x, y\n        self.size = CONFIG[\"enemy_size\"]\n        self.image = pygame.Surface(self.size).fill((255, 0, 0))\n        self.speed = CONFIG[\"enemy_speed\"]",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"enemy_size\"]\n        self.image = pygame.Surface(self.size).fill((255, 0, 0))\n        self.speed = CONFIG[\"enemy_speed\"]",
+              "byte_span":[
+                84,
+                288
+              ],
+              "start_point":[
+                5,
+                4
+              ],
+              "end_point":[
+                9,
+                42
+              ],
+              "use_dependencies":{
+                "self.size":[
+                  "y"
+                ],
+                "self.image":[
+                  "y",
+                  "self.size"
+                ],
+                "self.speed":[
+                  "y"
+                ]
+              }
+            },
+            {
+              "func_signature":"    def move(self): self.y += self.speed",
+              "func_name":"move",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"    def move(self): self.y += self.speed",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def move(self): self.y += self.speed",
+              "byte_span":[
+                294,
+                330
+              ],
+              "start_point":[
+                11,
+                4
+              ],
+              "end_point":[
+                11,
+                40
+              ],
+              "use_dependencies":{
+
+              }
+            },
+            {
+              "func_signature":"    def draw(self, screen): screen.blit(self.image, (self.x, self.y))",
+              "func_name":"draw",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"screen",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"    def draw(self, screen): screen.blit(self.image, (self.x, self.y))",
+              "return_statements":[
+
+              ],
+              "func_orig_str":"def draw(self, screen): screen.blit(self.image, (self.x, self.y))",
+              "byte_span":[
+                335,
+                400
+              ],
+              "start_point":[
+                12,
+                4
+              ],
+              "end_point":[
+                12,
+                69
+              ],
+              "use_dependencies":{
+
+              }
+            },
+            {
+              "func_signature":"    def interact_with_bullet(self, bullets):",
+              "func_name":"interact_with_bullet",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"bullets",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"        for bullet in bullets:\n            if self.x < bullet.x < self.x + self.size[0] and self.y < bullet.y < self.y + self.size[1]:\n                bullets.remove(bullet)\n                return True  # Bullet hit the enemy\n        return False",
+              "return_statements":[
+                "return False",
+                "return True"
+              ],
+              "func_orig_str":"def interact_with_bullet(self, bullets):\n        for bullet in bullets:\n            if self.x < bullet.x < self.x + self.size[0] and self.y < bullet.y < self.y + self.size[1]:\n                bullets.remove(bullet)\n                return True  # Bullet hit the enemy\n        return False",
+              "byte_span":[
+                406,
+                693
+              ],
+              "start_point":[
+                14,
+                4
+              ],
+              "end_point":[
+                19,
+                20
+              ],
+              "use_dependencies":{
+
+              }
+            },
+            {
+              "func_signature":"    def check_collision_with_bullet(self, bullets):",
+              "func_name":"check_collision_with_bullet",
+              "func_parameters":[
+                {
+                  "name":"self",
+                  "type":"",
+                  "default_value":""
+                },
+                {
+                  "name":"bullets",
+                  "type":"",
+                  "default_value":""
+                }
+              ],
+              "func_return_type":"",
+              "func_decorator":"",
+              "func_docstring":"",
+              "func_body":"        return False",
+              "return_statements":[
+                "return False"
+              ],
+              "func_orig_str":"def check_collision_with_bullet(self, bullets):\n        return False",
+              "byte_span":[
+                703,
+                771
+              ],
+              "start_point":[
+                21,
+                4
+              ],
+              "end_point":[
+                22,
+                20
+              ],
+              "use_dependencies":{
+
+              }
+            }
+          ],
+          "class_orig_str":"class Enemy:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n        self.size = CONFIG[\"enemy_size\"]\n        self.image = pygame.Surface(self.size).fill((255, 0, 0))\n        self.speed = CONFIG[\"enemy_speed\"]\n\n    def move(self): self.y += self.speed\n    def draw(self, screen): screen.blit(self.image, (self.x, self.y))\n\n    def interact_with_bullet(self, bullets):\n        for bullet in bullets:\n            if self.x < bullet.x < self.x + self.size[0] and self.y < bullet.y < self.y + self.size[1]:\n                bullets.remove(bullet)\n                return True  # Bullet hit the enemy\n        return False\n    \n    def check_collision_with_bullet(self, bullets):\n        return False",
+          "byte_span":[
+            67,
+            771
+          ],
+          "start_point":[
+            4,
+            0
+          ],
+          "end_point":[
+            22,
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "file_path":"game.py",
+      "file_docstring":"",
+      "imports":[
+        "import pygame",
+        "from config import CONFIG",
+        "from player import Player",
+        "from enemy import Enemy",
+        "from bullet import Bullet"
+      ],
+      "global_vars":[
+
+      ],
+      "functions":[
+        {
+          "func_signature":"def game_loop():",
+          "func_name":"game_loop",
+          "func_parameters":[
+
+          ],
+          "func_return_type":"",
+          "func_decorator":"",
+          "func_docstring":"",
+          "func_body":"    pygame.init()\n    screen = pygame.display.set_mode((CONFIG[\"screen_width\"], CONFIG[\"screen_height\"]))\n    clock = pygame.time.Clock()\n    player = Player(375, 500)\n    enemy = Enemy(375, 50)\n\n    running = True\n    while running:\n        screen.fill((0, 0, 0))\n        keys = pygame.key.get_pressed()\n\n        for event in pygame.event.get():\n            if event.type == pygame.QUIT: running = False\n            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:\n                player.shoot()\n\n        player.move(keys)\n        enemy.move()\n        player.draw(screen)\n        enemy.draw(screen)\n\n        if enemy.interact_with_bullet(player.bullets):  # Enemy interacts with player bullets\n            print(\"Enemy hit by bullet!\")\n\n        pygame.display.flip()\n        clock.tick(CONFIG[\"fps\"])\n\n    pygame.quit()",
+          "return_statements":[
+
+          ],
+          "func_orig_str":"def game_loop():\n    pygame.init()\n    screen = pygame.display.set_mode((CONFIG[\"screen_width\"], CONFIG[\"screen_height\"]))\n    clock = pygame.time.Clock()\n    player = Player(375, 500)\n    enemy = Enemy(375, 50)\n\n    running = True\n    while running:\n        screen.fill((0, 0, 0))\n        keys = pygame.key.get_pressed()\n\n        for event in pygame.event.get():\n            if event.type == pygame.QUIT: running = False\n            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:\n                player.shoot()\n\n        player.move(keys)\n        enemy.move()\n        player.draw(screen)\n        enemy.draw(screen)\n\n        if enemy.interact_with_bullet(player.bullets):  # Enemy interacts with player bullets\n            print(\"Enemy hit by bullet!\")\n\n        pygame.display.flip()\n        clock.tick(CONFIG[\"fps\"])\n\n    pygame.quit()",
+          "byte_span":[
+            117,
+            970
+          ],
+          "start_point":[
+            6,
+            0
+          ],
+          "end_point":[
+            34,
+            17
+          ],
+          "use_dependencies":{
+
+          }
+        }
+      ],
+      "classes":[
+
+      ]
+    }
+  ]
+}
