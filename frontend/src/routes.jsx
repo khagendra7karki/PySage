@@ -6,6 +6,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 const Home = lazy(() => import('./components/Home'));
 const Blog = lazy(() => import('./components/Blog'));
 const ChatBox = lazy(() => import('./components/ChatBox'));
+const About = lazy(() => import('./components/About'));
 const NotFound = lazy(() => import('./components/NotFound')); // NotFound page
 
 // Helper function to wrap components with Suspense
@@ -23,6 +24,7 @@ export const routes = [
       { index: true, element: withSuspense(Home) },
       { path: 'blog', element: withSuspense(Blog) },
       { path: 'websocket', element: withSuspense(ChatBox) },
+      { path: 'about', element: withSuspense(About) },
     ],
   },
   {
