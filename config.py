@@ -1,1 +1,0 @@
-SPACES_PER_INDENT = 4 # defines the no. of spaces per indentation

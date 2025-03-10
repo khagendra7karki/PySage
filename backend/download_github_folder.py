@@ -1,6 +1,8 @@
 import os
 import requests
+import dotenv
 
+dotenv.load_dotenv()
 def download_github_folder(repo_url, folder_name, destination_path):
     """
     Downloads a specified folder from a github repository to a local directory
@@ -14,7 +16,7 @@ def download_github_folder(repo_url, folder_name, destination_path):
     api_url = f"http://api.github.com/repos/{repo_url.split('/')[-2]}/{repo_url.split('/')[-1]}/contents/{folder_name}"
 
 
-    response = requests.get(api_url, headers={"Accept": "application/vnd.github.raw+json", "Authorization":"Bearer <github_access_token"})
+    response = requests.get(api_url, headers={"Accept": "application/vnd.github.raw+json", "Authorization":"Bearer " + os.getenv("GITHUB_ACCESS_TOKEN")})
 
     if response.status_code == 200:
         data = response.json()
@@ -38,8 +40,8 @@ def download_github_folder(repo_url, folder_name, destination_path):
 
 
 
-repo_url="https://github.com/unclecode/crawl4ai"
-folder_to_download="crawl4ai"
+repo_url="https://github.com/openai/human-eval"
+folder_to_download="data"
 
 local_path='./'
 download_github_folder(repo_url, folder_to_download, local_path)

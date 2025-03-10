@@ -7,11 +7,13 @@ english
 datasets--hoskinson-center--proof-pile
 math
 
+datasets--IRIISNEPAL--Nepali-Text-Corpus
+
 # Python Corpus
 python-dataset
 new-python-dataset
 code-data
-
+crawl4ai
 
 # caches
 __pycache__
@@ -25,3 +27,7 @@ myvenv
 repo-id
 
 models
+
+# 
+human_eval
+human_eval_infilling

@@ -199,11 +199,11 @@ def cleaned_data_tests():
 if __name__ == '__main__':
     # print(check_unique())
     # try:
-    #     check_all_syntax()
+    check_all_syntax()
     #     print("Test passed")
     # except Exception as e:
     #     print("Test failed")
-    cleaned_data_tests()
+    # cleaned_data_tests()
 
     # remove_non_unique_files()
 

@@ -49,9 +49,6 @@ class AutoCompletion():
     #         path=path,
     #         project=self.project
     #     )
-
-
-
         
         
 
