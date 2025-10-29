@@ -416,8 +416,8 @@ func collectPythonFiles(rootDir string) ([]string, error) {
 }
 
 func main() {
-	createdAfter := "2024-03-03"
-	endDate := "2025-03-04"
+	createdAfter := "2025-03-04"
+	endDate := "2025-04-20"
 	outputDir := "./scraped_repos"
 	progressFile := "./progress.json"
 	apiToken := os.Getenv("GITHUB_ACCESS_TOKEN") // Use GitHub token from environment variable

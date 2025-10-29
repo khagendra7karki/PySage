@@ -1,0 +1,107 @@
+{
+  "input_prefix": "import pygame\nfrom config import CONFIG\nfrom player import Player\nfrom enemy import Enemy\nfrom bullet import Bullet as b\n\ndef game_loop():\n    pygame.init()\n    screen = pygame.display.set_mode((CONFIG[\"screen_width\"], CONFIG[\"screen_height\"]))\n    clock = pygame.time.Clock()\n    player = Player(375, 500)\n    enemy = Enemy(375, 50)\n\n    running = True\n    while running:\n        screen.fill((0, 0, 0))\n        keys = pygame.key.get_pressed()\n\n        for event in pygame.event.get():\n            if event.type == pygame.QUIT:\n                running = False\n            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:\n                player.shoot()\n\n        # Move player and restrict within screen bounds\n        player.move(keys)\n        player.x = max(0, min(player.x, CONFIG[\"screen_width\"] - player.size[0]))\n        player.y = max(0, min(player.y, CONFIG[\"screen_height\"] - player.size[1]))\n\n        # Move and draw enemy\n        enemy.move()\n        enemy.draw(screen)\n\n        # Move bullets and remove off-screen bullets\n        for bullet in player.bullets:\n",
+  "input_suffix": "\n        \n        player.bullets = [bullet for bullet in player.bullets if not bullet.is_off_screen()]\n\n        # Draw player and bullets\n        player.draw(screen)\n\n        # Check bullet collisions with enemy\n        if enemy.interact_with_bullet(player.bullets):\n            print(\"Enemy hit by bullet!\")\n\n        pygame.display.flip()\n        clock.tick(CONFIG[\"fps\"])\n\n    pygame.quit()\n\nif __name__ == \"__main__\":\n    game_loop()\n\n",
+  "input_extra": [
+    {
+      "text": "from enemy import Enemy\nfrom bullet import Bullet as b\n\ndef game_loop():\n    pygame.init()\n    screen = pygame.display.set_mode((CONFIG[\"screen_width\"], CONFIG[\"screen_height\"]))\n    clock = pygame.time.Clock()\n    player = Player(375, 500)\n    enemy = Enemy(375, 50)\n\n    running = True\n    while running:\n        screen.fill((0, 0, 0))\n        keys = pygame.key.get_pressed()\n\n        for event in pygame.event.get():\n            if event.type == pygame.QUIT:\n                running = False\n            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:\n                player.shoot()\n\n        # Move player and restrict within screen bounds\n        player.move(keys)\n        player.x = max(0, min(player.x, CONFIG[\"screen_width\"] - player.size[0]))\n        player.y = max(0, min(player.y, CONFIG[\"screen_height\"] - player.size[1]))\n\n        # Move and draw enemy\n        enemy.move()\n        enemy.draw(screen)\n\n        # Move bullets and remove off-screen bullets\n        for bullet in player.bullets:\n            bullet\n        \n        player.bullets = [bullet for bullet in player.bullets if not bullet.is_off_screen()]\n\n        # Draw player and bullets\n        player.draw(screen)\n\n        # Check bullet collisions with enemy\n        if enemy.interact_with_bullet(player.bullets):\n            print(\"Enemy hit by bullet!\")\n\n        pygame.display.flip()\n        clock.tick(CONFIG[\"fps\"])\n\n    pygame.quit()\n\nif __name__ == \"__main__\":\n    game_loop()\n\n",
+      "time": 1743758133119,
+      "filename": "/home/alpha/training-ground/BoxWar/main.py"
+    }
+  ],
+  "prompt": "            bullet.",
+  "n_predict": 128,
+  "top_k": 40,
+  "top_p": 0.99,
+  "stream": false,
+  "samplers": [
+    "top_k",
+    "top_p",
+    "infill"
+  ],
+  "cache_prompt": true,
+  "n_indent": 12,
+  "t_max_prompt_ms": 500,
+  "t_max_predict_ms": 500
+}
+
+{
+  "index": 0,
+  "content": "move()\n            bullet.draw(screen)",
+  "tokens": [],
+  "id_slot": 0,
+  "stop": true,
+  "model": "gpt-3.5-turbo",
+  "tokens_predicted": 8,
+  "tokens_evaluated": 695,
+  "generation_settings": {
+    "n_predict": 128,
+    "seed": 4294967295,
+    "temperature": 0.800000011920929,
+    "dynatemp_range": 0.0,
+    "dynatemp_exponent": 1.0,
+    "top_k": 40,
+    "top_p": 0.9900000095367432,
+    "min_p": 0.05000000074505806,
+    "xtc_probability": 0.0,
+    "xtc_threshold": 0.10000000149011612,
+    "typical_p": 1.0,
+    "repeat_last_n": 64,
+    "repeat_penalty": 1.0,
+    "presence_penalty": 0.0,
+    "frequency_penalty": 0.0,
+    "dry_multiplier": 0.0,
+    "dry_base": 1.75,
+    "dry_allowed_length": 2,
+    "dry_penalty_last_n": 32768,
+    "dry_sequence_breakers": [
+      "\n",
+      ":",
+      "\"",
+      "*"
+    ],
+    "mirostat": 0,
+    "mirostat_tau": 5.0,
+    "mirostat_eta": 0.10000000149011612,
+    "stop": [],
+    "max_tokens": 128,
+    "n_keep": 0,
+    "n_discard": 0,
+    "ignore_eos": false,
+    "stream": false,
+    "logit_bias": [],
+    "n_probs": 0,
+    "min_keep": 0,
+    "grammar": "",
+    "grammar_lazy": false,
+    "grammar_triggers": [],
+    "preserved_tokens": [],
+    "chat_format": "Content-only",
+    "samplers": [
+      "top_k",
+      "top_p",
+      "infill"
+    ],
+    "speculative.n_max": 16,
+    "speculative.n_min": 0,
+    "speculative.p_min": 0.75,
+    "timings_per_token": false,
+    "post_sampling_probs": false,
+    "lora": []
+  },
+  "prompt": "<|repo_name|>myproject\n<|file_sep|>/home/alpha/training-ground/BoxWar/main.py\nfrom enemy import Enemy\nfrom bullet import Bullet as b\n\ndef game_loop():\n    pygame.init()\n    screen = pygame.display.set_mode((CONFIG[\"screen_width\"], CONFIG[\"screen_height\"]))\n    clock = pygame.time.Clock()\n    player = Player(375, 500)\n    enemy = Enemy(375, 50)\n\n    running = True\n    while running:\n        screen.fill((0, 0, 0))\n        keys = pygame.key.get_pressed()\n\n        for event in pygame.event.get():\n            if event.type == pygame.QUIT:\n                running = False\n            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:\n                player.shoot()\n\n        # Move player and restrict within screen bounds\n        player.move(keys)\n        player.x = max(0, min(player.x, CONFIG[\"screen_width\"] - player.size[0]))\n        player.y = max(0, min(player.y, CONFIG[\"screen_height\"] - player.size[1]))\n\n        # Move and draw enemy\n        enemy.move()\n        enemy.draw(screen)\n\n        # Move bullets and remove off-screen bullets\n        for bullet in player.bullets:\n            bullet\n        \n        player.bullets = [bullet for bullet in player.bullets if not bullet.is_off_screen()]\n\n        # Draw player and bullets\n        player.draw(screen)\n\n        # Check bullet collisions with enemy\n        if enemy.interact_with_bullet(player.bullets):\n            print(\"Enemy hit by bullet!\")\n\n        pygame.display.flip()\n        clock.tick(CONFIG[\"fps\"])\n\n    pygame.quit()\n\nif __name__ == \"__main__\":\n    game_loop()\n\n<|file_sep|>filename\n<|fim_prefix|>import pygame\nfrom config import CONFIG\nfrom player import Player\nfrom enemy import Enemy\nfrom bullet import Bullet as b\n\ndef game_loop():\n    pygame.init()\n    screen = pygame.display.set_mode((CONFIG[\"screen_width\"], CONFIG[\"screen_height\"]))\n    clock = pygame.time.Clock()\n    player = Player(375, 500)\n    enemy = Enemy(375, 50)\n\n    running = True\n    while running:\n        screen.fill((0, 0, 0))\n        keys = pygame.key.get_pressed()\n\n        for event in pygame.event.get():\n            if event.type == pygame.QUIT:\n                running = False\n            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:\n                player.shoot()\n\n        # Move player and restrict within screen bounds\n        player.move(keys)\n        player.x = max(0, min(player.x, CONFIG[\"screen_width\"] - player.size[0]))\n        player.y = max(0, min(player.y, CONFIG[\"screen_height\"] - player.size[1]))\n\n        # Move and draw enemy\n        enemy.move()\n        enemy.draw(screen)\n\n        # Move bullets and remove off-screen bullets\n        for bullet in player.bullets:\n            bullet.<|fim_suffix|>\n        \n        player.bullets = [bullet for bullet in player.bullets if not bullet.is_off_screen()]\n\n        # Draw player and bullets\n        player.draw(screen)\n\n        # Check bullet collisions with enemy\n        if enemy.interact_with_bullet(player.bullets):\n            print(\"Enemy hit by bullet!\")\n\n        pygame.display.flip()\n        clock.tick(CONFIG[\"fps\"])\n\n    pygame.quit()\n\nif __name__ == \"__main__\":\n    game_loop()\n\n<|fim_middle|>",
+  "has_new_line": true,
+  "truncated": false,
+  "stop_type": "eos",
+  "stopping_word": "",
+  "tokens_cached": 702,
+  "timings": {
+    "prompt_n": 695,
+    "prompt_ms": 2545.581,
+    "prompt_per_token_ms": 3.662706474820144,
+    "prompt_per_second": 273.02215093528747,
+    "predicted_n": 8,
+    "predicted_ms": 267.524,
+    "predicted_per_token_ms": 33.4405,
+    "predicted_per_second": 29.903859093015953
+  }
+}

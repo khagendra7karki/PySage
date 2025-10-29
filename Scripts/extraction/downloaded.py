@@ -47,7 +47,7 @@ def downloaded_files():
         set_i_only.update(list_i)
         set_c_only.update(list_c)
     
-        set_c_only, set_i_only=set_c_only - set_i_only, set_i_only - set_c_only     # retain only those names that are only in code file
+        set_c_only, set_i_only=set_c_only - set_i_only, set_i_only - set_c_only     # retain those names that are only in code file
 
         list_c.clear()
         list_i.clear()
