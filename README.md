@@ -133,6 +133,7 @@ We built two main components:
 
 | Path                   | Status                                                                            |
 | ---------------------- | --------------------------------------------------------------------------------- |
+| `/frontend/`         | A simple frontend for interacting with the model|
 | `/Scripts/model.py/`   | Early LLaMA-like architecture (never trained to convergence)                      |
 | `/Scripts/tokenizer/`  | BPE tokenizer experiments (largely unused after switching to Qwen)                |
 | `/Scripts/pipeline/`   | Data scraping, cleaning, FIM formatting (partially functional)                    |
