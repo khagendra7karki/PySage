@@ -12,7 +12,7 @@ Our original ambition was bold: **train a code language model from scratch**, ak
 
 We quickly realized that even a 200M-parameter model demanded more compute, storage, and iteration time than we could sustain. So we pivoted.
 
-The final system uses **Qwen2.5-Coder-0.5B**, fine-tuned on fresh Python code, pruned for efficiency, and served via a **custom C++ backend** using `llama.cpp`, all wrapped in a **VS Code extension**.
+The final system uses **Qwen2.5-Coder-0.5B**, fine-tuned on fresh Python code, pruned for efficiency, and served via a **custom C++ backend** using `llama.cpp`, all wrapped in a [**VS Code extension**](https://github.com/khagendra7karki/PySage-Extension).
 
 The goal? **Context-aware, cross-file, Fill-in-the-Middle (FIM) completions**—running entirely offline on modest hardware.
 
@@ -115,7 +115,7 @@ We built two main components:
 | **Fine-tuning Epochs**       | —               | **3 epochs**                                 | Focused on **cross-file-aware FIM completions**                                     |
 | **Quantization**             | FP32 / BF16     | **INT8 (GGUF)**                              | Enabled **CPU-only inference** via `llama.cpp`                                      |
 | **Latency (Backend)**        | —               | **Median: 19.88 ms**<br>**Mean: 18.56 ms**   | Measured per completion sample (see Fig 6.14)                                       |
-| **Evaluation**               | —               | **HumanEval-Infill**<br>**Exact Match (EM)** | Pass@k scores improved post-FIM training; EM tracked during fine-tuning (Fig 6.8)   |
+| **Evaluation**               | —               | **HumanEval-Infill**<br>**Exact Match (EM)** | Pass@k scores improved post-FIM training; EM tracked during fine-tuning (Fig 6.8 of report)   |
 
 > 💡 **Note**: All results reflect the **final fine-tuned Qwen2.5-Coder-0.5B** model with pruned vocabulary, quantized to INT8, and evaluated on local CPU (no GPU).
 
