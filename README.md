@@ -133,6 +133,7 @@ We built two main components:
 
 | Path                   | Status                                                                            |
 | ---------------------- | --------------------------------------------------------------------------------- |
+| `/server/`             | A server based in C. Inspiration take fron `llama.cpp`      |
 | `/frontend/`         | A simple frontend for interacting with the model|
 | `/Scripts/model.py/`   | Early LLaMA-like architecture (never trained to convergence)                      |
 | `/Scripts/tokenizer/`  | BPE tokenizer experiments (largely unused after switching to Qwen)                |
